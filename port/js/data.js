@@ -7,8 +7,8 @@ export const profileData = {
     <p>スキル：JavaScript, Three.js, HTML, CSS</p>
     <p>詳細は以下をご覧ください。</p>
     <p>
-      <a href="https://github.com/あなたのユーザー名" target="_blank">GitHub</a> | 
-      <a href="https://x.com/あなたのユーザー名" target="_blank">X (旧Twitter)</a> |
+      <a href="https://github.com/nitr0yukkuri" target="_blank">GitHub</a> | 
+      <a href="https://x.com/0ts_St" target="_blank">X (旧Twitter)</a> |
       <a href="mailto:あなたのメールアドレス">メールで連絡</a>
     </p>
   `
@@ -26,14 +26,13 @@ export const eventData = [
 },
 // ...
   { 
-    title: "〇〇ハッカソン", 
+    title: "でんしょうお", 
     description: "ここで「〇〇賞」を優勝しました！",
     image: "./assets/images/hackathon-prize.jpg", 
-    url: "https://example.com/hackathon-project"
   }, 
   { 
-    title: "イベント 2", 
-    description: "ここに実績2が入ります。",
+    title: "きじょばと", 
+    description: "きじょあと",
     image: null, 
     url: "https://example.com/event2"
   }, 
