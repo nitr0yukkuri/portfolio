@@ -16,6 +16,9 @@ export function setupInteractions(camera, renderer, composer, bloomPass, board, 
     const infoDescription = document.getElementById('info-description');
     const closeBtn = document.getElementById('info-close-btn');
 
+    const moveLeftBtn = document.getElementById('move-left-btn');
+    const moveRightBtn = document.getElementById('move-right-btn');
+
     function showSidePanel(data) {
       infoTitle.innerText = data.title;
       infoDescription.innerHTML = data.description;
@@ -34,32 +37,52 @@ export function setupInteractions(camera, renderer, composer, bloomPass, board, 
       infoBox.classList.remove('visible');
     }
     
-    // === 閉じるボタンのイベントリスナーを修正 ===
-    // 初回表示時と通常時でイベントリスナーを分ける
-    
+    closeBtn.addEventListener('click', hideSidePanel);
     infoBox.addEventListener('click', (event) => event.stopPropagation()); 
 
-    const mouseDownPos = new THREE.Vector2();
-    renderer.domElement.addEventListener('mousedown', (event) => {
-      mouseDownPos.x = event.clientX;
-      mouseDownPos.y = event.clientY;
-    });
+    const downPos = new THREE.Vector2();
+    let isDragging = false;
+    
+    function onPointerDown(event) {
+      event.preventDefault();
+      isDragging = false;
+      const clientX = event.clientX || event.touches[0].clientX;
+      const clientY = event.clientY || event.touches[0].clientY;
+      downPos.set(clientX, clientY);
+    }
 
-    renderer.domElement.addEventListener('mouseup', (event) => {
-      const deltaX = Math.abs(mouseDownPos.x - event.clientX);
-      const deltaY = Math.abs(mouseDownPos.y - event.clientY);
-      const dragThreshold = 5; 
-
-      if (deltaX < dragThreshold && deltaY < dragThreshold) {
-        performRaycast(event); 
+    function onPointerMove(event) {
+      const clientX = event.clientX || event.touches[0].clientX;
+      const clientY = event.clientY || event.touches[0].clientY;
+      const deltaX = Math.abs(downPos.x - clientX);
+      const deltaY = Math.abs(downPos.y - clientY);
+      if (deltaX > 5 || deltaY > 5) {
+        isDragging = true;
       }
-    });
+    }
+
+    function onPointerUp(event) {
+      if (!isDragging) {
+        performRaycast(event);
+      }
+    }
+
+    renderer.domElement.addEventListener('mousedown', onPointerDown);
+    renderer.domElement.addEventListener('mouseup', onPointerUp);
+    renderer.domElement.addEventListener('mousemove', onPointerMove);
+    renderer.domElement.addEventListener('touchstart', onPointerDown, { passive: false });
+    renderer.domElement.addEventListener('touchend', onPointerUp);
+    renderer.domElement.addEventListener('touchmove', onPointerMove, { passive: false });
+
 
     function performRaycast( event ) {
       if (infoBox.classList.contains('visible')) { return; } 
 
-      pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-      pointer.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+      const clientX = event.clientX || event.changedTouches[0].clientX;
+      const clientY = event.clientY || event.changedTouches[0].clientY;
+      
+      pointer.x = ( clientX / window.innerWidth ) * 2 - 1;
+      pointer.y = - ( clientY / window.innerHeight ) * 2 + 1;
       raycaster.setFromCamera( pointer, camera );
       
       const objectsToCheck = [ ...board.children, ...player.children ];
@@ -139,19 +162,30 @@ export function setupInteractions(camera, renderer, composer, bloomPass, board, 
       }
     });
 
-    // === ページ読み込み時に最初のマスの情報を表示し、クローズ時にプロフィールを表示する ===
+    moveLeftBtn.addEventListener('click', () => {
+      if (!isMoving) {
+        movePlayerToIndex(currentPlayerIndex - 1);
+      }
+    });
+    moveRightBtn.addEventListener('click', () => {
+      if (!isMoving) {
+        movePlayerToIndex(currentPlayerIndex + 1);
+      }
+    });
+
+
+    // === ページ読み込み時のパネル表示ロジックを修正 ===
     const initialData = eventData[0];
     showSidePanel(initialData);
 
     const initialCloseHandler = () => {
       hideSidePanel();
       showSidePanel(profileData);
-      // 初回のみ実行されるように、このリスナーを削除
       closeBtn.removeEventListener('click', initialCloseHandler);
-      // 以降は通常のhideSidePanelを使用
       closeBtn.addEventListener('click', hideSidePanel);
     };
 
     closeBtn.addEventListener('click', initialCloseHandler);
-  });
+
+  }); 
 }
