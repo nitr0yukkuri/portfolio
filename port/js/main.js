@@ -59,10 +59,10 @@ function animate() {
 animate();
 
 // === Window Resize 対応 ===
+// ★ エラー箇所：ここの最後の }); が無くなっていませんか？
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth/window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
-
-// (最後の余計な '}' は削除済みです)
+// (あなたの元のファイル にあった余計な '}' は取り除かれています)
