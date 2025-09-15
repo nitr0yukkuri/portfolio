@@ -18,6 +18,12 @@ export function setupInteractions(camera, renderer, composer, bloomPass, board, 
 
     const moveLeftBtn = document.getElementById('move-left-btn');
     const moveRightBtn = document.getElementById('move-right-btn');
+    
+    // === 新しいHTML要素の取得 ===
+    const showProfileBtn = document.getElementById('show-profile-btn');
+    const showEventsBtn = document.getElementById('show-events-btn');
+    // ============================
+
 
     function showSidePanel(data) {
       infoTitle.innerText = data.title;
@@ -173,8 +179,18 @@ export function setupInteractions(camera, renderer, composer, bloomPass, board, 
       }
     });
 
+    // === ナビゲーションUIのイベント ===
+    showProfileBtn.addEventListener('click', () => {
+      showSidePanel(profileData);
+    });
+    showEventsBtn.addEventListener('click', () => {
+      // 全実績をまとめて表示する新しい関数を実装するか、
+      // ユーザーを実績一覧ページにリダイレクトさせる
+      // ここでは例として最初の実績を表示
+      showSidePanel(eventData[1]);
+    });
 
-    // === ページ読み込み時のパネル表示ロジックを修正 ===
+
     const initialData = eventData[0];
     showSidePanel(initialData);
 
