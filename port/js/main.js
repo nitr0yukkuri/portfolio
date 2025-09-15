@@ -5,15 +5,12 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-// 開発者ツールを開いたときに表示されるメッセージ
-console.log("%cなにみてんねん", "color: black; font-size: 24px; font-weight: bold;");
-console.log("ソースコード見てもええけど、優しくしてな…");
-
+import * as TWEEN from 'tween.js'; 
 
 // === 専門家（モジュール）のインポート ===
-import { createBoard, positions } from './board.js'; // ボード担当
-import { createPlayer } from './player.js'; // プレイヤー担当
-import { setupInteractions } from './interactions.js'; // イベント担当
+import { createBoard, positions } from './board.js'; 
+import { createPlayer } from './player.js'; 
+import { setupInteractions } from './interactions.js'; 
 
 // === Scene, Camera, Renderer ===
 const scene = new THREE.Scene();
@@ -22,26 +19,30 @@ const renderer = new THREE.WebGLRenderer({ antialias:true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+// === ★★★ ここから修正点 (ライト調整) ★★★ ===
+// (明るい背景HDRIを使うため、人工のライトを弱めます)
+
 // === Light ===
-const light = new THREE.DirectionalLight(0xffffff, 1.5); 
+const light = new THREE.DirectionalLight(0xffffff, 0.01); // ★ 強さを 1.5 から 0.8 に下げました
 light.position.set(10, 10, 5);
 scene.add(light);
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.6); 
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.01); // ★ 強さを 0.6 から 0.3 に下げました
 scene.add(ambientLight);
 
 // === 3D背景の読み込み (HDRI) ===
-const hdriURL = 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/qwantani_night_puresky_1k.hdr';
+// (あなたが選んだ明るい背景)
+const hdriURL = 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/citrus_orchard_road_puresky_1k.hdr';
 const loader = new RGBELoader();
 loader.load(
   hdriURL, 
-  (texture) => { // OnLoad
+  (texture) => { 
     texture.mapping = THREE.EquirectangularReflectionMapping;
     scene.background = texture;
     scene.environment = texture;
     document.getElementById('loader-overlay').classList.add('hidden');
   },
   undefined, 
-  (error) => { // OnError
+  (error) => { 
     console.error('3D背景(HDRI)の読み込みに失敗しました:', error);
     document.getElementById('loader-overlay').classList.add('hidden');
   }
@@ -49,9 +50,9 @@ loader.load(
 
 
 // === ボードとプレイヤーの作成 ===
-const board = createBoard(scene); // ボード担当を呼ぶ
-const player = createPlayer(); // プレイヤー担当を呼ぶ
-player.position.set(positions[0][0], positions[0][1], positions[0][2]); // スタート地点に配置
+const board = createBoard(scene); 
+const player = createPlayer(); 
+player.position.set(positions[0][0], positions[0][1], positions[0][2]); 
 scene.add(player);
 
 
@@ -66,21 +67,25 @@ const composer = new EffectComposer( renderer );
 const renderPass = new RenderPass( scene, camera );
 composer.addPass( renderPass );
 const bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 );
-bloomPass.strength = 0.4; // 強度を調整
+
+bloomPass.strength = 0.4; // ★ 強すぎたので 0.4 から 0.2 に下げました
+
 composer.addPass( bloomPass );
 const outputPass = new OutputPass();
 composer.addPass( outputPass );
 
+// === ★★★ 修正点ここまで ★★★ ===
 
-// === アニメーションループ ===
-function animate() {
-  requestAnimationFrame(animate);
+
+// === アニメーションループ (TWEEN対応) ===
+function animate(time) {
+  requestAnimationFrame(animate); 
   controls.update();
-  composer.render(); // エフェクト合成機を描画
+  TWEEN.update(time); 
+  composer.render(); 
 }
-animate(); // ループ開始
+animate(); 
 
 
 // === すべてのイベント処理をセットアップ ===
-// (イベント担当を呼び出し、必要な3Dオブジェクトや設定を渡す)
 setupInteractions(camera, renderer, composer, bloomPass, board, player);

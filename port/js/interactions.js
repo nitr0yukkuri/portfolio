@@ -1,9 +1,10 @@
 import * as THREE from 'three';
-import { positions } from './board.js'; // マスの座標データだけインポート
-import { profileData, eventData } from './data.js'; // テキストデータだけインポート
+import * as TWEEN from 'tween.js'; // TWEENをインポート
+import { positions } from './board.js'; // マスの座標データ
+import { profileData, eventData } from './data.js'; // テキストデータ
 
-// プレイヤーの現在の位置（マス番号）を管理する変数
 let currentPlayerIndex = 0; 
+let isMoving = false; // 移動中は true
 
 // === すべてのイベント処理をセットアップするメイン関数 ===
 export function setupInteractions(camera, renderer, composer, bloomPass, board, player) {
@@ -11,7 +12,6 @@ export function setupInteractions(camera, renderer, composer, bloomPass, board, 
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
 
-  // HTMLの読み込み完了を待つ (この関数自体が main.js の最後で呼ばれるため DOMContentLoaded は不要な場合もあるが、安全策として残す)
   window.addEventListener('DOMContentLoaded', () => {
 
     // HTML要素取得
@@ -45,14 +45,14 @@ export function setupInteractions(camera, renderer, composer, bloomPass, board, 
     renderer.domElement.addEventListener('mouseup', (event) => {
       const deltaX = Math.abs(mouseDownPos.x - event.clientX);
       const deltaY = Math.abs(mouseDownPos.y - event.clientY);
-      const dragThreshold = 5; // 5ピクセル以上の移動はドラッグとみなす
+      const dragThreshold = 5; 
 
       if (deltaX < dragThreshold && deltaY < dragThreshold) {
         performRaycast(event); // クリック判定を実行
       }
     });
 
-    // レイキャスト実行関数
+    // レイキャスト実行関数 (クリック時にマスと駒の両方に反応する)
     function performRaycast( event ) {
       if (infoBox.classList.contains('visible')) { return; } 
 
@@ -60,7 +60,6 @@ export function setupInteractions(camera, renderer, composer, bloomPass, board, 
       pointer.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
       raycaster.setFromCamera( pointer, camera );
       
-      // 判定対象（ボードの子とプレイヤーの子）
       const objectsToCheck = [ ...board.children, ...player.children ];
       const intersects = raycaster.intersectObjects( objectsToCheck );
       
@@ -98,17 +97,53 @@ export function setupInteractions(camera, renderer, composer, bloomPass, board, 
       } else {
         currentPlayerIndex = index;
       }
-      const newPos = positions[currentPlayerIndex]; 
-      player.position.set(newPos[0], newPos[1], newPos[2]);
+      
+      const targetPos = positions[currentPlayerIndex]; 
+      const currentPos = { x: player.position.x, y: player.position.y, z: player.position.z };
+
+      isMoving = true; 
+
+      // 1. 上昇アニメーション
+      const jumpHeight = 0.8; 
+      const jumpDuration = 200; 
+      const moveDuration = 400; 
+
+      new TWEEN.Tween(player.position)
+        .to({ y: currentPos.y + jumpHeight }, jumpDuration) 
+        .easing(TWEEN.Easing.Quadratic.Out) 
+        .onComplete(() => {
+          // 2. 移動と下降アニメーション
+          new TWEEN.Tween(player.position)
+            .to({ x: targetPos[0], y: targetPos[1], z: targetPos[2] }, moveDuration) 
+            .easing(TWEEN.Easing.Quadratic.In) 
+            .onComplete(() => {
+              isMoving = false; // アニメーション完了
+              
+              // === ★★★ これが今回の修正点 ★★★ ===
+              // 移動が完了したら、そのマスのイベントを自動で表示する
+              const data = eventData[currentPlayerIndex];
+              showInfoBox(data.title, data.description);
+              // ===================================
+            })
+            .start(); 
+        })
+        .start(); 
     }
     
     window.addEventListener('keydown', (event) => {
-      if (infoBox.classList.contains('visible')) { return; } 
+      if (infoBox.classList.contains('visible') || isMoving) { 
+        return; 
+      } 
+      
       if (event.key === 'ArrowRight') {
-        movePlayerToIndex(currentPlayerIndex + 1); 
+        if (currentPlayerIndex < positions.length - 1) { 
+          movePlayerToIndex(currentPlayerIndex + 1); 
+        }
       }
       if (event.key === 'ArrowLeft') {
-        movePlayerToIndex(currentPlayerIndex - 1); 
+        if (currentPlayerIndex > 0) { 
+          movePlayerToIndex(currentPlayerIndex - 1); 
+        }
       }
     });
 
