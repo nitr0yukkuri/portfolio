@@ -16,12 +16,15 @@ export const profileData = {
 
 // === マスごとの実績データ ===
 export const eventData = [
-  { 
-    title: "スタート地点", 
-    description: "俺のポートフォリオへようこそ！<br>◀️ ▶️ キーで駒を動かそう！<br>駒やマスをクリックすると詳細が表示されるよ", // ID 0
-    image: null, 
-    url: null
-  }, 
+// js/data.js の修正例
+// ...
+{ 
+  title: "スタート地点", 
+  description: "俺のポートフォリオへようこそ！<br>◀️ ▶️ キーで駒を動かそう！<br>駒やマスをクリックすると詳細が表示されるよ",
+  image: null, 
+  url: null
+},
+// ...
   { 
     title: "〇〇ハッカソン", 
     description: "ここで「〇〇賞」を優勝しました！",

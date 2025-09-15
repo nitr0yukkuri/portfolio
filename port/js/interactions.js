@@ -11,28 +11,34 @@ export function setupInteractions(camera, renderer, composer, bloomPass, board, 
   const pointer = new THREE.Vector2();
 
   window.addEventListener('DOMContentLoaded', () => {
-    // HTML要素取得
     const infoBox = document.getElementById('info-box');
     const infoTitle = document.getElementById('info-title');
     const infoDescription = document.getElementById('info-description');
     const closeBtn = document.getElementById('info-close-btn');
 
-    // ポップアップ関数をサイドパネル用に関数名を変更
-    function showSidePanel(title, description) {
-      infoTitle.innerText = title;
-      infoDescription.innerHTML = description;
+    function showSidePanel(data) {
+      infoTitle.innerText = data.title;
+      infoDescription.innerHTML = data.description;
+
+      if (data.image) {
+        infoDescription.innerHTML += `<br><img src="${data.image}" alt="${data.title}" style="width:100%; max-width:250px; margin-top:20px;">`;
+      }
+      if (data.url) {
+        infoDescription.innerHTML += `<br><a href="${data.url}" target="_blank">詳細はこちら</a>`;
+      }
+
       infoBox.classList.add('visible'); 
     }
+    
     function hideSidePanel() {
       infoBox.classList.remove('visible');
     }
     
-    // ポップアップのイベントリスナー
-    closeBtn.addEventListener('click', hideSidePanel);
-    infoBox.addEventListener('click', (event) => event.stopPropagation()); // クリック突き抜け防止
-
+    // === 閉じるボタンのイベントリスナーを修正 ===
+    // 初回表示時と通常時でイベントリスナーを分ける
     
-    // === 高精度クリック判定（ドラッグとクリックの分離） ===
+    infoBox.addEventListener('click', (event) => event.stopPropagation()); 
+
     const mouseDownPos = new THREE.Vector2();
     renderer.domElement.addEventListener('mousedown', (event) => {
       mouseDownPos.x = event.clientX;
@@ -45,14 +51,12 @@ export function setupInteractions(camera, renderer, composer, bloomPass, board, 
       const dragThreshold = 5; 
 
       if (deltaX < dragThreshold && deltaY < dragThreshold) {
-        performRaycast(event); // クリック判定を実行
+        performRaycast(event); 
       }
     });
 
-    // レイキャスト実行関数 (クリック時にマスと駒の両方に反応する)
     function performRaycast( event ) {
-      // サイドパネルが表示中でもクリックは受け付ける
-      // if (infoBox.classList.contains('visible')) { return; } 
+      if (infoBox.classList.contains('visible')) { return; } 
 
       pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
       pointer.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
@@ -65,18 +69,16 @@ export function setupInteractions(camera, renderer, composer, bloomPass, board, 
         const clickedObject = intersects[0].object;
         
         if ( clickedObject.userData.type === 'PLAYER' ) {
-          showSidePanel( profileData.title, profileData.description );
+          showSidePanel( profileData );
         } 
         else if ( clickedObject.userData.type === 'board_square' ) {
           const eventId = clickedObject.userData.id;
           const data = eventData[eventId];
-          showSidePanel( data.title, data.description );
+          showSidePanel( data );
         }
       }
     }
     
-    
-    // === Window Resize (ブルーム対応版) ===
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth/window.innerHeight;
       camera.updateProjectionMatrix();
@@ -85,8 +87,6 @@ export function setupInteractions(camera, renderer, composer, bloomPass, board, 
       bloomPass.setSize(window.innerWidth, window.innerHeight);
     });
 
-
-    // === 矢印キー移動のロジック ===
     function movePlayerToIndex(index) {
       if (index >= positions.length) {
         currentPlayerIndex = positions.length - 1; 
@@ -101,7 +101,6 @@ export function setupInteractions(camera, renderer, composer, bloomPass, board, 
 
       isMoving = true; 
 
-      // 1. 上昇アニメーション
       const jumpHeight = 0.8; 
       const jumpDuration = 200; 
       const moveDuration = 400; 
@@ -110,15 +109,13 @@ export function setupInteractions(camera, renderer, composer, bloomPass, board, 
         .to({ y: currentPos.y + jumpHeight }, jumpDuration) 
         .easing(TWEEN.Easing.Quadratic.Out) 
         .onComplete(() => {
-          // 2. 移動と下降アニメーション
           new TWEEN.Tween(player.position)
             .to({ x: targetPos[0], y: targetPos[1], z: targetPos[2] }, moveDuration) 
             .easing(TWEEN.Easing.Quadratic.In) 
             .onComplete(() => {
-              isMoving = false; // アニメーション完了
-              
+              isMoving = false; 
               const data = eventData[currentPlayerIndex];
-              showSidePanel(data.title, data.description);
+              showSidePanel(data);
             })
             .start(); 
         })
@@ -142,7 +139,19 @@ export function setupInteractions(camera, renderer, composer, bloomPass, board, 
       }
     });
 
-    // ゲーム開始時、初期位置の情報を表示
-    showSidePanel(eventData[0].title, eventData[0].description);
+    // === ページ読み込み時に最初のマスの情報を表示し、クローズ時にプロフィールを表示する ===
+    const initialData = eventData[0];
+    showSidePanel(initialData);
+
+    const initialCloseHandler = () => {
+      hideSidePanel();
+      showSidePanel(profileData);
+      // 初回のみ実行されるように、このリスナーを削除
+      closeBtn.removeEventListener('click', initialCloseHandler);
+      // 以降は通常のhideSidePanelを使用
+      closeBtn.addEventListener('click', hideSidePanel);
+    };
+
+    closeBtn.addEventListener('click', initialCloseHandler);
   });
 }
