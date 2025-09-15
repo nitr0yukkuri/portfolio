@@ -150,7 +150,7 @@ export function setupInteractions(camera, renderer, composer, bloomPass, board, 
       isMoving = true; 
 
       const jumpHeight = 1; 
-      const jumpDuration = 200; 
+      const jumpDuration = 250; 
       const moveDuration = 400; 
 
       new TWEEN.Tween(player.position)

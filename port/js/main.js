@@ -11,8 +11,6 @@ import * as TWEEN from 'tween.js';
 import { createBoard, positions } from './board.js'; 
 import { createPlayer } from './player.js'; 
 import { setupInteractions } from './interactions.js'; 
-console.log("%cうんこもん", "font-size: 30px; font-weight: bold; color: black;");
-
 
 // === Scene, Camera, Renderer ===
 const scene = new THREE.Scene();
@@ -21,18 +19,14 @@ const renderer = new THREE.WebGLRenderer({ antialias:true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// === ★★★ ここから修正点 (ライト調整) ★★★ ===
-// (明るい背景HDRIを使うため、人工のライトを弱めます)
-
-// === Light ===
-const light = new THREE.DirectionalLight(0xffffff, 0.01); // ★ 強さを 1.5 から 0.8 に下げました
+// === ライト調整 ===
+const light = new THREE.DirectionalLight(0xffffff, 0.01);
 light.position.set(10, 10, 5);
 scene.add(light);
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.01); // ★ 強さを 0.6 から 0.3 に下げました
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.01);
 scene.add(ambientLight);
 
 // === 3D背景の読み込み (HDRI) ===
-// (あなたが選んだ明るい背景)
 const hdriURL = 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/citrus_orchard_road_puresky_1k.hdr';
 const loader = new RGBELoader();
 loader.load(
@@ -41,6 +35,10 @@ loader.load(
     texture.mapping = THREE.EquirectangularReflectionMapping;
     scene.background = texture;
     scene.environment = texture;
+
+    scene.backgroundIntensity = 0.5;
+    scene.environmentIntensity = 0.5;
+    
     document.getElementById('loader-overlay').classList.add('hidden');
   },
   undefined, 
@@ -70,13 +68,11 @@ const renderPass = new RenderPass( scene, camera );
 composer.addPass( renderPass );
 const bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 );
 
-bloomPass.strength = 0.4; // ★ 強すぎたので 0.4 から 0.2 に下げました
+bloomPass.strength = 0.4;
 
 composer.addPass( bloomPass );
 const outputPass = new OutputPass();
 composer.addPass( outputPass );
-
-// === ★★★ 修正点ここまで ★★★ ===
 
 
 // === アニメーションループ (TWEEN対応) ===
@@ -91,6 +87,3 @@ animate();
 
 // === すべてのイベント処理をセットアップ ===
 setupInteractions(camera, renderer, composer, bloomPass, board, player);
-// ... (既存のコード) ...
-
-

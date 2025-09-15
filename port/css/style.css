@@ -171,13 +171,15 @@ canvas {
 /* ...既存のCSSコードはそのまま... */
 
 /* === ナビゲーションUI === */
+/* === ナビゲーションUI === */
 #nav-buttons {
   position: fixed;
   bottom: 20px;
   left: 20px;
   z-index: 1000;
-  display: flex;
   gap: 10px;
+  /* デフォルトで非表示にする */
+  display: none;
 }
 
 #nav-buttons button {
@@ -189,7 +191,6 @@ canvas {
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.2s, transform 0.2s;
- 
 }
 
 #nav-buttons button:hover {
@@ -197,9 +198,9 @@ canvas {
   transform: scale(1.05);
 }
 
-/* モバイル向けにボタンを非表示にする（任意） */
-@media (min-width: 768px) {
+/* 768px以下の画面（スマホ）でのみ表示する */
+@media (max-width: 768px) {
   #nav-buttons {
-    display: none;
+    display: flex;
   }
 }
