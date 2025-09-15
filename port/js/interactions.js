@@ -1,37 +1,34 @@
 import * as THREE from 'three';
-import * as TWEEN from 'tween.js'; // TWEENをインポート
-import { positions } from './board.js'; // マスの座標データ
-import { profileData, eventData } from './data.js'; // テキストデータ
+import * as TWEEN from 'tween.js';
+import { positions } from './board.js';
+import { profileData, eventData } from './data.js';
 
 let currentPlayerIndex = 0; 
-let isMoving = false; // 移動中は true
+let isMoving = false; 
 
-// === すべてのイベント処理をセットアップするメイン関数 ===
 export function setupInteractions(camera, renderer, composer, bloomPass, board, player) {
-
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
 
   window.addEventListener('DOMContentLoaded', () => {
-
     // HTML要素取得
     const infoBox = document.getElementById('info-box');
     const infoTitle = document.getElementById('info-title');
     const infoDescription = document.getElementById('info-description');
     const closeBtn = document.getElementById('info-close-btn');
 
-    // ポップアップ関数
-    function showInfoBox(title, description) {
+    // ポップアップ関数をサイドパネル用に関数名を変更
+    function showSidePanel(title, description) {
       infoTitle.innerText = title;
-      infoDescription.innerText = description;
+      infoDescription.innerHTML = description;
       infoBox.classList.add('visible'); 
     }
-    function hideInfoBox() {
+    function hideSidePanel() {
       infoBox.classList.remove('visible');
     }
     
     // ポップアップのイベントリスナー
-    closeBtn.addEventListener('click', hideInfoBox);
+    closeBtn.addEventListener('click', hideSidePanel);
     infoBox.addEventListener('click', (event) => event.stopPropagation()); // クリック突き抜け防止
 
     
@@ -54,7 +51,8 @@ export function setupInteractions(camera, renderer, composer, bloomPass, board, 
 
     // レイキャスト実行関数 (クリック時にマスと駒の両方に反応する)
     function performRaycast( event ) {
-      if (infoBox.classList.contains('visible')) { return; } 
+      // サイドパネルが表示中でもクリックは受け付ける
+      // if (infoBox.classList.contains('visible')) { return; } 
 
       pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
       pointer.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
@@ -67,12 +65,12 @@ export function setupInteractions(camera, renderer, composer, bloomPass, board, 
         const clickedObject = intersects[0].object;
         
         if ( clickedObject.userData.type === 'PLAYER' ) {
-          showInfoBox( profileData.title, profileData.description );
+          showSidePanel( profileData.title, profileData.description );
         } 
         else if ( clickedObject.userData.type === 'board_square' ) {
           const eventId = clickedObject.userData.id;
           const data = eventData[eventId];
-          showInfoBox( data.title, data.description );
+          showSidePanel( data.title, data.description );
         }
       }
     }
@@ -119,11 +117,8 @@ export function setupInteractions(camera, renderer, composer, bloomPass, board, 
             .onComplete(() => {
               isMoving = false; // アニメーション完了
               
-              // === ★★★ これが今回の修正点 ★★★ ===
-              // 移動が完了したら、そのマスのイベントを自動で表示する
               const data = eventData[currentPlayerIndex];
-              showInfoBox(data.title, data.description);
-              // ===================================
+              showSidePanel(data.title, data.description);
             })
             .start(); 
         })
@@ -131,7 +126,7 @@ export function setupInteractions(camera, renderer, composer, bloomPass, board, 
     }
     
     window.addEventListener('keydown', (event) => {
-      if (infoBox.classList.contains('visible') || isMoving) { 
+      if (isMoving) { 
         return; 
       } 
       
@@ -147,5 +142,7 @@ export function setupInteractions(camera, renderer, composer, bloomPass, board, 
       }
     });
 
-  }); // DOMContentLoaded 閉じ
+    // ゲーム開始時、初期位置の情報を表示
+    showSidePanel(eventData[0].title, eventData[0].description);
+  });
 }

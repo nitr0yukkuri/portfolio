@@ -11,6 +11,8 @@ import * as TWEEN from 'tween.js';
 import { createBoard, positions } from './board.js'; 
 import { createPlayer } from './player.js'; 
 import { setupInteractions } from './interactions.js'; 
+console.log("%cうんこもん", "font-size: 30px; font-weight: bold; color: black;");
+
 
 // === Scene, Camera, Renderer ===
 const scene = new THREE.Scene();
@@ -89,3 +91,6 @@ animate();
 
 // === すべてのイベント処理をセットアップ ===
 setupInteractions(camera, renderer, composer, bloomPass, board, player);
+// ... (既存のコード) ...
+
+
