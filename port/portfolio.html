@@ -1,12 +1,52 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>3D人生ゲーム</title>
+ <meta charset="UTF-8">
+ <title>3D人生ゲーム</title>
+
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+
+ <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
-<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-<script src="./js/board.js"></script>
-<script src="./js/main.js"></script>
+
+ <div id="loader-overlay">
+<div class="spinner"></div>
+  <div class="loader-text">ないとりお... 読み込み中...</div>
+ </div>
+
+ <div id="info-box">
+ <h2 id="info-title">（タイトル）</h2>
+ <p id="info-description">（説明文）</p>
+ <button id="info-close-btn">閉じる</button>
+ </div>
+ 
+ <script type="importmap">
+ {
+ "imports": {
+"three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+"three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+"three/addons/postprocessing/EffectComposer.js": "https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/EffectComposer.js",
+"three/addons/postprocessing/RenderPass.js": "https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/RenderPass.js",
+ "three/addons/postprocessing/UnrealBloomPass.js": "https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/UnrealBloomPass.js",
+"three/addons/postprocessing/OutputPass.js": "https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/OutputPass.js",
+
+ "tween.js": "https://unpkg.com/@tweenjs/tween.js@23.1.1/dist/tween.esm.js"
+ }
+}
+ </script>
+
+ <script type="module" src="./js/main.js"></script>
+
+  <div id="mobile-controls">
+    <button id="move-left-btn">◀</button>
+    <button id="move-right-btn">▶</button>
+  </div>
+     <div id="nav-buttons">
+    <button id="show-profile-btn">プロフィール</button>
+    <button id="show-events-btn">実績一覧</button>
+  </div>
 </body>
 </html>
