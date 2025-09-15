@@ -1,29 +1,23 @@
-// board.js: マスを作成する関数
-function createBoard(scene) {
+// ★ この行が https://... のURLになっているか確認してください
+import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+
+// ボード生成関数を export
+export function createBoard(scene) {
   const board = new THREE.Group();
   const geometry = new THREE.BoxGeometry(1, 0.2, 1);
 
-  // マスの位置
+  // (あなたの最新の positions 配列)
   const positions = [
-    [0, 0, 0],[1.2, 0, 0],[2.4, 0, 0],[3.6, 0, 0],
-    [3.6, 0, -1.2],[3.6, 0, -2.4],[3.6, 0, -3.6],
-    [2.4, 0, -3.6],[1.2, 0, -3.6],[0, 0, -3.6],
-    [0, 0,-2.4],[0, 0,-1.3]
+    [0,0,0],[1.2,0,0],[2.4,0,0],[3.6,0,0],
+    [3.6,0,-1.2],[3.6,0,-2.4],[3.6,0,-3.6],
+    [2.4,0,-3.6],[1.2,0,-3.6],[0,0,-3.6],
+    [0,0,-2.4],[0,0,-1.2]
   ];
 
-  // ★マスごとの色を配列で定義（すべて同じ色に設定）
-  const colors = [
-    0x00ffcc, 0x00ffcc, 0x00ffcc, 0x00ffcc,
-    0x00ffcc, 0x00ffcc, 0x00ffcc, 0x00ffcc,
-    0x00ffcc, 0x00ffcc, 0x00ffcc, 0x00ffcc
-  ];
+  // (単色に戻したマテリアル)
+  const material = new THREE.MeshStandardMaterial({ color: 0x00ffcc });
 
-  // positions配列をループ処理。forEachの2番目の引数(index)で配列の番号を取得
-  positions.forEach((pos, index) => {
-    // ループの中で、colors配列から色を取り出してマテリアルを個別に作成
-    const material = new THREE.MeshStandardMaterial({ color: colors[index] });
-    
-    // マスを作成
+  positions.forEach(pos => {
     const square = new THREE.Mesh(geometry, material);
     square.position.set(pos[0], pos[1], pos[2]);
     board.add(square);
