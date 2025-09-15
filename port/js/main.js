@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-// board.js から positions 配列もインポートする
+// ★ HDRI(.hdrファイル)を読み込むためのローダーを追加
+import { RGBELoader } from 'three/addons/loaders/RGBELoader.js'; 
 import { createBoard, positions } from './board.js';
 
 // === ポートフォリオ用のデータ ===
@@ -9,18 +10,9 @@ const eventData = [
   { title: "スタート地点", description: "俺のポートフォリオへようこそ！" }, // 0
   { title: "〇〇ハッカソン", description: "ここで「〇〇賞」を優勝しました！" }, // 1
   { title: "イベント 2", description: "ここに実績2が入ります。" }, // 2
-  { title: "イベント 3", description: "ここに実績3が入ります。" }, // 3
-  { title: "イベント 4", description: "ここに実績4が入ります。" }, // 4
-  { title: "イベント 5", description: "ここに実績5が入ります。" }, // 5
-  { title: "イベント 6", description: "ここに実績6が入ります。" }, // 6
-  { title: "イベント 7", description: "ここに実績7が入ります。" }, // 7
-  { title: "イベント 8", description: "ここに実績8が入ります。" }, // 8
-  { title: "イベント 9", description: "ここに実績9が入ります。" }, // 9
-  { title: "イベント 10", description: "ここに実績10が入ります。" }, // 10
+  // ( ... 他のイベントデータ ... )
   { title: "ゴール！", description: "最後まで見てくれてありがとう！" } // 11
 ];
-
-// プレイヤーの現在の位置（マス番号）を管理する変数
 let currentPlayerIndex = 0; 
 
 // === Scene, Camera, Renderer ===
@@ -31,16 +23,29 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 // === Light ===
-const light = new THREE.DirectionalLight(0xffffff, 1); // 影を作るメインのライト
+const light = new THREE.DirectionalLight(0xffffff, 1); 
 light.position.set(10, 10, 5);
 scene.add(light);
-
-// === ★★★ これが今回の修正点 ★★★ ===
-// 環境光（AmbientLight）を追加。空間全体を均一に照らす補助ライト。
-// これがないと影の部分が真っ黒になるが、これがあると影が柔らかくなる。
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.4); // (色, 強さ)
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.4); 
 scene.add(ambientLight);
-// ===================================
+
+
+// === ★★★ これが今回の修正点 (3D背景の読み込み) ★★★ ===
+// ↓↓↓ このURLを差し替える
+const hdriURL = 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/qwantani_night_puresky_1k.hdr'; // 無料のHDRIアセット
+const loader = new RGBELoader();
+loader.load(hdriURL, (texture) => {
+  // 読み込んだテクスチャを360度の球体としてマッピングする設定
+  texture.mapping = THREE.EquirectangularReflectionMapping;
+  
+  // シーンの背景 (Background) として設定
+  scene.background = texture;
+  
+  // シーンの環境光 (Environment) としても設定
+  // (これにより、HDRIの光が駒やマスを照らし、リアルな反射が生まれる)
+  scene.environment = texture;
+});
+// ===============================================
 
 
 // === Board ===
@@ -113,7 +118,7 @@ window.addEventListener('DOMContentLoaded', () => {
   
   // ポップアップのイベントリスナー
   closeBtn.addEventListener('click', hideInfoBox);
-  infoBox.addEventListener('click', (event) => event.stopPropagation()); // クリック突き抜け防止
+  infoBox.addEventListener('click', (event) => event.stopPropagation()); 
 
   // 3D空間のクリック判定
   function onWindowClick( event ) {
