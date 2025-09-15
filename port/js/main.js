@@ -1,6 +1,7 @@
-import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
-import { OrbitControls } from 'https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js';
-import { createBoard } from './board.js'; // 相対パスで読み込み
+// ★ インポートマップで定義した「ショートカット名」を使います
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { createBoard } from './board.js';
 
 // === Scene, Camera, Renderer ===
 const scene = new THREE.Scene();
@@ -20,9 +21,7 @@ const board = createBoard(scene);
 // === Player ===
 const playerMaterial = new THREE.MeshStandardMaterial({ color: 0x0000ff });
 const player = new THREE.Group();
-
 const boardTopY = 0.1;
-
 // Base
 const baseHeight = 0.1;
 const baseRadius = 0.25;
@@ -30,21 +29,18 @@ const baseGeo = new THREE.CylinderGeometry(baseRadius, baseRadius, baseHeight, 3
 const baseMesh = new THREE.Mesh(baseGeo, playerMaterial);
 baseMesh.position.y = boardTopY + baseHeight / 2;
 player.add(baseMesh);
-
 // Body
 const bodyHeight = 0.3;
 const bodyGeo = new THREE.CylinderGeometry(0.1, 0.2, bodyHeight, 32);
 const bodyMesh = new THREE.Mesh(bodyGeo, playerMaterial);
 bodyMesh.position.y = boardTopY + baseHeight + bodyHeight / 2;
 player.add(bodyMesh);
-
 // Head
 const headRadius = 0.15;
 const headGeo = new THREE.SphereGeometry(headRadius, 32, 32);
 const headMesh = new THREE.Mesh(headGeo, playerMaterial);
 headMesh.position.y = boardTopY + baseHeight + bodyHeight + headRadius;
 player.add(headMesh);
-
 player.position.set(0,0,0);
 scene.add(player);
 
@@ -68,3 +64,5 @@ window.addEventListener('resize', () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
+// (最後の余計な '}' は削除済みです)
