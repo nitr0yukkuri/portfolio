@@ -25,11 +25,14 @@ h1 {
 }
 p {
   line-height: 1.6;
+  font-size: 1.2em;
 }
+/* ...既存のCSSコードはそのまま... */
+
 .start-button {
   background-color: #00ffcc;
   color: #000;
-  border: none;
+  border: 1px solid white;
   padding: 15px 30px;
   margin-top: 30px;
   cursor: pointer;
@@ -37,9 +40,14 @@ p {
   border-radius: 50px;
   text-decoration: none;
   display: inline-block;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s; /* background-colorを追加 */
+
+
 }
+
+/* マウスポインターが乗った時のエフェクト */
 .start-button:hover {
+  background-color: #00e5b8; /* 少し濃い色に変わる */
   transform: scale(1.05);
   box-shadow: 0 6px 20px rgba(0, 255, 204, 0.4);
 }
