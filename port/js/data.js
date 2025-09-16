@@ -28,7 +28,7 @@ export const eventData = [
   { 
     title: "でんしょうお", 
     description: "ここで「〇〇賞」を優勝しました！",
-    image: "./assets/images/hackathon-prize.jpg", 
+     image: "/png/denshouo.png",
   }, 
   { 
     title: "きじょばと", 

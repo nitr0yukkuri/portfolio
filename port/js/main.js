@@ -20,11 +20,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 // === ライト調整 ===
-const light = new THREE.DirectionalLight(0xffffff, 0.01);
-light.position.set(10, 10, 5);
-scene.add(light);
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.01);
-scene.add(ambientLight);
+
 
 // === 3D背景の読み込み (HDRI) ===
 const hdriURL = 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/citrus_orchard_road_puresky_1k.hdr';
