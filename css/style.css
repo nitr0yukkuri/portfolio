@@ -199,19 +199,20 @@ canvas {
 }
 /* === ここから修正 === */
 /* 画面幅が768px以下のデバイスに適用されるスタイル */
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
+
   
   /* サイドパネルの幅とパディングを調整 */
   #info-box {
-    width: 85%; /* 画面幅の85%に設定 */
+    width: 60%; /* 画面幅の85%に設定 */
     padding: 20px;
-    font-size: 1.1em; /* 全体のフォントサイズを大きく */
+    font-size: 2.3em; /* 全体のフォントサイズを大きく */
     box-sizing: border-box;
   }
 
   /* パネル内の見出しのサイズを調整 */
   #info-box h2 {
-    font-size: 1.5em; /* タイトルのフォントサイズを大きく */
+    font-size: 1.7em; /* タイトルのフォントサイズを大きく */
     padding-bottom: 8px;
     margin-bottom: 15px;
   }
@@ -219,6 +220,7 @@ canvas {
   /* パネル内のボタンのサイズを調整 */
   #info-box button {
     font-size: 1.1em; /* ボタンのフォントサイズを大きく */
+    font-weight: 550;
   }
 }
 /* === ここまで修正 === */
