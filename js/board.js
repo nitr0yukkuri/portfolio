@@ -12,10 +12,24 @@ export const positions = [
 export function createBoard(scene) {
   const board = new THREE.Group();
   const geometry = new THREE.BoxGeometry(1, 0.2, 1);
-  const material = new THREE.MeshStandardMaterial({ color: 0x00ffcc });
+
+  // ご要望に合わせてホワイトをパステルレッドに変更した配色
+  const colors = [
+    0xb9fbc0, // パステルグリーン
+    0xa7c7e7, // パステルブルー
+    0xfdfd96, // パステルゴールド
+    0xffadad  // パステルレッド
+  ];
 
   // マスをループで生成
   positions.forEach((pos, index) => {
+    // ループの中で、マス一つ一つのマテリアル（色と質感）を作成
+    const material = new THREE.MeshStandardMaterial({ 
+      color: colors[index % 4], // 4色を順番に繰り返す
+      roughness: 0.9,           // 光沢を抑える（0に近いほどツルツル、1に近いほどザラザラ）
+      metalness: 0.1          // 金属っぽさを抑える
+    });
+    
     const square = new THREE.Mesh(geometry, material);
     square.position.set(pos[0], pos[1], pos[2]);
     
