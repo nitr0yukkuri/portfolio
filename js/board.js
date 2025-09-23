@@ -13,7 +13,7 @@ export function createBoard(scene) {
   const board = new THREE.Group();
   const geometry = new THREE.BoxGeometry(1, 0.2, 1);
 
-  // ご要望に合わせてホワイトをパステルレッドに変更した配色
+  // 通常マスの配色
   const colors = [
     0xb9fbc0, // パステルグリーン
     0xa7c7e7, // パステルブルー
@@ -23,17 +23,34 @@ export function createBoard(scene) {
 
   // マスをループで生成
   positions.forEach((pos, index) => {
-    // ループの中で、マス一つ一つのマテリアル（色と質感）を作成
-    const material = new THREE.MeshStandardMaterial({ 
-      color: colors[index % 4], // 4色を順番に繰り返す
-      roughness: 0.9,           // 光沢を抑える（0に近いほどツルツル、1に近いほどザラザラ）
-      metalness: 0.1          // 金属っぽさを抑える
-    });
+    let material;
+
+    // ★アイデア①：スタートとゴールのマスだけ色を特別にする
+    if (index === 0) {
+      // スタートマスは虹色のような特別な色に
+      material = new THREE.MeshStandardMaterial({ color: 0xffd700, emissive: 0xcca000, roughness: 0.4, metalness: 0.8 });
+    } else if (index === positions.length - 1) {
+      // ゴールマスは豪華なゴールドに
+      material = new THREE.MeshStandardMaterial({ color: 0xffd700, roughness: 0.2, metalness: 0.8 });
+    } else {
+      // それ以外の通常マス
+      material = new THREE.MeshStandardMaterial({ 
+        color: colors[(index - 1) % 4], // スタートマスを除外して4色を繰り返す
+        roughness: 0.9,
+        metalness: 0.1
+      });
+    }
     
     const square = new THREE.Mesh(geometry, material);
     square.position.set(pos[0], pos[1], pos[2]);
+
+    // ★アイデア②：マスに白い枠線を追加する
+    const edges = new THREE.EdgesGeometry(geometry);
+    const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 }); // 線の色を白に
+    const line = new THREE.LineSegments(edges, lineMaterial);
+    square.add(line); // 作成した枠線をマスに追加
     
-    // マス識別のためのIDと名前を埋め込む (main.jsのクリック判定で使う)
+    // マス識別のためのIDと名前を埋め込む
     square.name = `board_square_${index}`;
     square.userData = { type: 'board_square', id: index };
 
