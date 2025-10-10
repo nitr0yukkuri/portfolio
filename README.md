@@ -40,3 +40,18 @@
 ---
 
 ## 📁 ファイル構成
+.
+├── css
+│ ├── intro.css # スタート画面のスタイル
+│ └── style.css # ポートフォリオ本体のスタイル
+├── js
+│ ├── board.js # ボードの生成
+│ ├── data.js # プロフィールや実績データ
+│ ├── interactions.js # ユーザー操作に関する処理
+│ ├── main.js # メイン処理
+│ └── player.js # プレイヤー（駒）の生成
+├── png
+│ ├── denshouo.png # 実績画像
+│ └── README.md
+├── index.html # スタート画面
+└── portfolio.html # ポートフォリオ本体
