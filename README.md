@@ -43,3 +43,20 @@
 
 ## 📁 ファイル構成
 
+```text
+.
+├── index.html
+├── portfolio.html
+├── css/
+│   ├── intro.css
+│   └── style.css
+├── js/
+│   ├── board.js
+│   ├── data.js
+│   ├── interactions.js
+│   ├── main.js
+│   └── player.js
+└── png/
+    ├── denshouo.png
+    └── README.md
+```
