@@ -1,5 +1,7 @@
 # 🎲 3D人生ゲーム風ポートフォリオ
 
+[日本語](README.md) | [English](README.en.md)
+
 これは **Three.js** を使用して作成された、人生ゲーム風のインタラクティブなポートフォリオサイトです。
 
 ---
@@ -41,3 +43,20 @@
 
 ## 📁 ファイル構成
 
+```text
+.
+├── index.html
+├── portfolio.html
+├── css/
+│   ├── intro.css
+│   └── style.css
+├── js/
+│   ├── board.js
+│   ├── data.js
+│   ├── interactions.js
+│   ├── main.js
+│   └── player.js
+└── png/
+    ├── denshouo.png
+    └── README.md
+```
