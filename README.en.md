@@ -45,3 +45,21 @@ A portfolio where you move a piece around a 3D board to explore a profile and ac
 ---
 
 ## 📁 File structure
+
+```text
+.
+├── index.html
+├── portfolio.html
+├── css/
+│   ├── intro.css
+│   └── style.css
+├── js/
+│   ├── board.js
+│   ├── data.js
+│   ├── interactions.js
+│   ├── main.js
+│   └── player.js
+└── png/
+    ├── denshouo.png
+    └── README.md
+```
